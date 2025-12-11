@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/app/_lib/firebase";
 import { useAuth } from "@/app/_lib/AuthContext";
 
 function getInitials(displayName, email) {
@@ -19,6 +21,9 @@ export default function ProfilePage() {
     displayName: "",
     email: "",
     photoURL: "",
+    street: "",
+    city: "",
+    zipCode: "",
   });
   const [error, setError] = useState("");
 
@@ -28,6 +33,9 @@ export default function ProfilePage() {
         displayName: user.displayName || "",
         email: user.email || "",
         photoURL: user.photoURL || "",
+        street: "",
+        city: "",
+        zipCode: "",
       });
     }
   }, [user]);
@@ -58,6 +66,24 @@ export default function ProfilePage() {
       })
       .catch((error) => {
         setError(error.message);
+      });
+
+    setDoc(
+      doc(db, "users", user?.uid),
+      {
+        address: {
+          city: data.city,
+          street: data.street,
+          zipCode: data.zipCode,
+        },
+      },
+      { merge: true }
+    )
+      .then(() => {
+        console.log("Address saved");
+      })
+      .catch((error) => {
+        setError("Brak praw do zapisu: " + error.message);
       });
   };
 
@@ -141,6 +167,50 @@ export default function ProfilePage() {
             placeholder="https://example.com/avatar.jpg"
           />
         </label>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <label className="block space-y-2 sm:col-span-3">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+              Ulica
+            </span>
+            <input
+              type="text"
+              name="street"
+              value={formData.street}
+              onChange={onChange}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700"
+              placeholder="ul. Przykladowa 1"
+            />
+          </label>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+              Miasto
+            </span>
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={onChange}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700"
+              placeholder="Warszawa"
+            />
+          </label>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+              Kod pocztowy
+            </span>
+            <input
+              type="text"
+              name="zipCode"
+              value={formData.zipCode}
+              onChange={onChange}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700"
+              placeholder="00-000"
+            />
+          </label>
+        </div>
 
         <button
           type="submit"
