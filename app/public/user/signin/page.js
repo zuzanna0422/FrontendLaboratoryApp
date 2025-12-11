@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   signInWithEmailAndPassword,
@@ -7,25 +7,32 @@ import {
 } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function SignInPage() {
   const auth = getAuth();
   const params = useSearchParams();
   const router = useRouter();
-  const returnUrl = params.get("returnUrl") || "/";
+  const returnUrl = params.get("returnUrl");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const onSubmit = (e) => {
     e.preventDefault();
+    setErrorMessage("");
     const email = e.target["email"]?.value || "";
     const password = e.target["password"]?.value || "";
 
     setPersistence(auth, browserSessionPersistence)
       .then(() => signInWithEmailAndPassword(auth, email, password))
       .then(() => {
+        if (!returnUrl) {
+          router.push("/");
+          return;
+        }
         router.push(returnUrl);
       })
       .catch((error) => {
-        console.error("Sign-in error:", error.code, error.message);
+        setErrorMessage(error.message || "Nie udalo sie zalogowac.");
       });
   };
   return (
@@ -62,9 +69,15 @@ export default function SignInPage() {
             name="password"
             required
             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700"
-            placeholder="••••••••"
+            placeholder="********"
           />
         </label>
+
+        {errorMessage && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-sm dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
+            {errorMessage}
+          </div>
+        )}
 
         <button
           type="submit"
