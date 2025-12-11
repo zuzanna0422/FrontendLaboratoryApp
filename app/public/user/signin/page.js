@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   setPersistence,
   browserSessionPersistence,
+  signOut,
 } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -16,24 +17,31 @@ export default function SignInPage() {
   const returnUrl = params.get("returnUrl");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
     const email = e.target["email"]?.value || "";
     const password = e.target["password"]?.value || "";
 
-    setPersistence(auth, browserSessionPersistence)
-      .then(() => signInWithEmailAndPassword(auth, email, password))
-      .then(() => {
-        if (!returnUrl) {
-          router.push("/");
-          return;
-        }
-        router.push(returnUrl);
-      })
-      .catch((error) => {
-        setErrorMessage(error.message || "Nie udalo sie zalogowac.");
-      });
+    try {
+      await setPersistence(auth, browserSessionPersistence);
+      const credential = await signInWithEmailAndPassword(auth, email, password);
+
+      if (!credential.user.emailVerified) {
+        setErrorMessage("Email niezweryfikowany. Sprawdz skrzynke i kliknij link weryfikacyjny.");
+        await signOut(auth);
+        router.push("/public/user/verify");
+        return;
+      }
+
+      if (!returnUrl) {
+        router.push("/");
+        return;
+      }
+      router.push(returnUrl);
+    } catch (error) {
+      setErrorMessage(error.message || "Nie udalo sie zalogowac.");
+    }
   };
   return (
     <div className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-8 shadow-lg ring-1 ring-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:ring-slate-800/60">

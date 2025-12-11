@@ -34,10 +34,13 @@ export default function RegisterPage() {
       await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       await sendEmailVerification(auth.currentUser);
       await signOut(auth);
-      router.push("/user/verify");
+      router.push("/public/user/verify");
     } catch (error) {
-      setRegisterError(error.message);
-      console.dir(error);
+      if (error?.code === "auth/email-already-in-use") {
+        setRegisterError("Ten adres email jest juz zarejestrowany. Uzyj innego lub zaloguj sie.");
+      } else {
+        setRegisterError(error.message);
+      }
     }
   };
 

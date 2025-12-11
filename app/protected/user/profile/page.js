@@ -4,6 +4,15 @@ import { useEffect, useState } from "react";
 import { updateProfile } from "firebase/auth";
 import { useAuth } from "@/app/_lib/AuthContext";
 
+function getInitials(displayName, email) {
+  const source = displayName || email || "UA";
+  const parts = source.trim().split(/\s+/);
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
 export default function ProfilePage() {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -27,6 +36,8 @@ export default function ProfilePage() {
     return null;
   }
 
+  const initials = getInitials(formData.displayName, formData.email);
+
   const onChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -36,9 +47,11 @@ export default function ProfilePage() {
     e.preventDefault();
     setError("");
 
+    const data = formData;
+
     updateProfile(user, {
-      displayName: formData.displayName,
-      photoURL: formData.photoURL,
+      displayName: data.displayName,
+      photoURL: data.photoURL,
     })
       .then(() => {
         console.log("Profile updated");
@@ -60,6 +73,25 @@ export default function ProfilePage() {
         <p className="text-sm text-slate-500 dark:text-slate-400">
           Zmien nazwe wyswietlana i adres zdjecia profilowego.
         </p>
+      </div>
+
+      <div className="mb-6 flex items-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-slate-200 text-base font-semibold text-slate-700 shadow-sm ring-1 ring-slate-300 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700">
+          {formData.photoURL ? (
+            <img
+              src={formData.photoURL}
+              alt={formData.displayName || formData.email || "Avatar"}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span>{initials}</span>
+          )}
+        </div>
+        <div className="text-sm text-slate-600 dark:text-slate-300">
+          {formData.photoURL
+            ? "Podglad aktualnego zdjecia profilowego."
+            : "Brak zdjecia. Dodaj link do avatara ponizej."}
+        </div>
       </div>
 
       {error && (

@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/app/_lib/AuthContext";
+import UserBadge from "@/app/_components/UserBadge";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,17 +36,7 @@ export default function RootLayout({ children }) {
           <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
             <div className="mx-auto grid min-h-screen max-w-6xl overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800 lg:grid-cols-[260px_1fr]">
               <aside className="flex flex-col gap-6 bg-gradient-to-b from-slate-950 to-slate-900 px-6 py-8 text-slate-50">
-                <div className="flex items-center gap-4 rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-lg font-semibold text-slate-900 shadow-md">
-                    UA
-                  </div>
-                  <div className="leading-tight">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300">
-                      Nawigacja
-                    </p>
-                    <p className="text-xl font-bold">Panel uzytkownika</p>
-                  </div>
-                </div>
+                <UserBadge />
                 <nav className="space-y-2">
                   {navItems.map((item) => (
                     <SidebarLink key={item.href} {...item} />
