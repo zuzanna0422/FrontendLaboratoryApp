@@ -1,6 +1,33 @@
 "use client";
 
+import {
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserSessionPersistence,
+} from "firebase/auth";
+import { getAuth } from "firebase/auth";
+import { useSearchParams, useRouter } from "next/navigation";
+
 export default function SignInPage() {
+  const auth = getAuth();
+  const params = useSearchParams();
+  const router = useRouter();
+  const returnUrl = params.get("returnUrl") || "/";
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const email = e.target["email"]?.value || "";
+    const password = e.target["password"]?.value || "";
+
+    setPersistence(auth, browserSessionPersistence)
+      .then(() => signInWithEmailAndPassword(auth, email, password))
+      .then(() => {
+        router.push(returnUrl);
+      })
+      .catch((error) => {
+        console.error("Sign-in error:", error.code, error.message);
+      });
+  };
   return (
     <div className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-8 shadow-lg ring-1 ring-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:ring-slate-800/60">
       <div className="mb-6 space-y-1">
@@ -12,12 +39,7 @@ export default function SignInPage() {
         </p>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
-        className="space-y-4"
-      >
+      <form onSubmit={onSubmit} className="space-y-4">
         <label className="block space-y-2">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
             Email
