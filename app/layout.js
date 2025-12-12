@@ -17,6 +17,7 @@ const geistMono = Geist_Mono({
 const navItems = [
   { label: "Panel", href: "/", Icon: HomeIcon },
   { label: "Profil", href: "/protected/user/profile", Icon: ProfileIcon },
+  { label: "Artykuly", href: "/protected/user/articles", Icon: ArticleIcon },
   { label: "Zmien haslo", href: "/protected/user/changepassword", Icon: LockIcon },
   { label: "Wyloguj", href: "/protected/user/signout", Icon: LogoutIcon },
 ];
@@ -163,6 +164,25 @@ function LockIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M7 11V8a5 5 0 1 1 10 0v3m-9 0h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Zm5 4v2"
+      />
+    </svg>
+  );
+}
+
+function ArticleIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M7 7h7m-7 4h4m-4 4h6M6 3h9l3 3v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
       />
     </svg>
   );

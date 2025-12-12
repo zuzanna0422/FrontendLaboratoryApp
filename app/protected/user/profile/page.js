@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/app/_lib/firebase";
 import { useAuth } from "@/app/_lib/AuthContext";
 
@@ -26,9 +26,17 @@ export default function ProfilePage() {
     zipCode: "",
   });
   const [error, setError] = useState("");
+  const [isAddressLoading, setIsAddressLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    if (!user) {
+      return;
+    }
+
+    setIsAddressLoading(true);
+    setError("");
+
+    const loadAddress = async () => {
       setFormData({
         displayName: user.displayName || "",
         email: user.email || "",
@@ -37,7 +45,26 @@ export default function ProfilePage() {
         city: "",
         zipCode: "",
       });
-    }
+
+      try {
+        const snapshot = await getDoc(doc(db, "users", user?.uid));
+        const address = snapshot.data()?.address;
+        if (address) {
+          setFormData((prev) => ({
+            ...prev,
+            city: address.city || "",
+            street: address.street || "",
+            zipCode: address.zipCode || "",
+          }));
+        }
+      } catch (err) {
+        setError("Nie udalo sie pobrac adresu: " + err.message);
+      } finally {
+        setIsAddressLoading(false);
+      }
+    };
+
+    loadAddress();
   }, [user]);
 
   if (!user) {
@@ -45,6 +72,7 @@ export default function ProfilePage() {
   }
 
   const initials = getInitials(formData.displayName, formData.email);
+  const isFormDisabled = isAddressLoading;
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +81,9 @@ export default function ProfilePage() {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    if (isAddressLoading) {
+      return;
+    }
     setError("");
 
     const data = formData;
@@ -136,8 +167,9 @@ export default function ProfilePage() {
             name="displayName"
             value={formData.displayName}
             onChange={onChange}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
             placeholder="Twoja nazwa"
+            disabled={isFormDisabled}
           />
         </label>
 
@@ -163,8 +195,9 @@ export default function ProfilePage() {
             name="photoURL"
             value={formData.photoURL}
             onChange={onChange}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
             placeholder="https://example.com/avatar.jpg"
+            disabled={isFormDisabled}
           />
         </label>
 
@@ -178,10 +211,11 @@ export default function ProfilePage() {
               name="street"
               value={formData.street}
               onChange={onChange}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700"
-              placeholder="ul. Przykladowa 1"
-            />
-          </label>
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+            placeholder="ul. Przykladowa 1"
+            disabled={isFormDisabled}
+          />
+        </label>
 
           <label className="block space-y-2">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
@@ -192,10 +226,11 @@ export default function ProfilePage() {
               name="city"
               value={formData.city}
               onChange={onChange}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700"
-              placeholder="Warszawa"
-            />
-          </label>
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+            placeholder="Warszawa"
+            disabled={isFormDisabled}
+          />
+        </label>
 
           <label className="block space-y-2">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
@@ -206,15 +241,17 @@ export default function ProfilePage() {
               name="zipCode"
               value={formData.zipCode}
               onChange={onChange}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700"
-              placeholder="00-000"
-            />
-          </label>
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-slate-500 dark:focus:ring-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+            placeholder="00-000"
+            disabled={isFormDisabled}
+          />
+        </label>
         </div>
 
         <button
           type="submit"
-          className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-[1px] hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 dark:focus:ring-slate-700"
+          className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-[1px] hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 dark:focus:ring-slate-700"
+          disabled={isFormDisabled}
         >
           Zapisz profil
         </button>
