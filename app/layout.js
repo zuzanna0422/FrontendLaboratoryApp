@@ -35,7 +35,7 @@ export default function RootLayout({ children }) {
       >
         <AuthProvider>
           <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
-            <div className="mx-auto grid min-h-screen max-w-6xl overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800 lg:grid-cols-[260px_1fr]">
+            <div className="mx-auto grid min-h-screen max-w-7xl overflow-hidden rounded-3xl bg-white px-3 pb-6 shadow-2xl ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800 sm:px-6 lg:px-10 lg:grid-cols-[280px_1fr] lg:pb-0">
               <aside className="flex flex-col gap-6 bg-gradient-to-b from-slate-950 to-slate-900 px-6 py-8 text-slate-50">
                 <UserBadge />
                 <nav className="space-y-2">
@@ -46,8 +46,8 @@ export default function RootLayout({ children }) {
               </aside>
 
               <div className="flex min-h-screen flex-col bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
-                <header className="flex flex-col gap-4 border-b border-slate-200/60 bg-white/80 px-8 py-6 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="space-y-1">
+                <header className="flex flex-col gap-4 border-b border-slate-200/60 bg-white/80 px-6 py-6 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:px-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:justify-between">
+                  <div className="space-y-1 min-w-0">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
                       Laboratory App
                     </p>
@@ -58,7 +58,7 @@ export default function RootLayout({ children }) {
                       Pasek boczny, gorny pasek z poleceniami logowania oraz stopka ponizej.
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                     <Link
                       href="/public/user/register"
                       className="rounded-full border border-slate-300 bg-white px-5 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-[1px] hover:border-slate-400 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-slate-500"
