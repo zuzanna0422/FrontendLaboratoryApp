@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Frontend Laboratory App
 
-## Getting Started
+Next.js 16 aplikacja laboratoryjna z obsługą Firebase Auth, formularzem rejestracji/logowania oraz sekcją zamówień.
 
-First, run the development server:
+## Wersja live
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Vercel: https://frontend-laboratory-no9yds52n-zuzias-projects-eb30e661.vercel.app
+- Testowe logowanie: email `zuzia.cholewa@gmail.com`, hasło `321zuzia123`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Uruchomienie lokalne
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+1. Zainstaluj zależności:
+   ```bash
+   npm install
+   ```
+2. Uruchom dev server:
+   ```bash
+   npm run dev
+   ```
+3. Otwórz aplikację na `http://localhost:3000`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Build i produkcja
 
-## Learn More
+- Build: `npm run build`
+- Start serwera produkcyjnego: `npm run start`
 
-To learn more about Next.js, take a look at the following resources:
+## Testy e2e (Playwright)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Konfiguracja w `playwright.config.ts` startuje dev server automatycznie:
+  ```bash
+  npx playwright test
+  ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Konfiguracja środowiskowa
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Klucze Firebase w `.env` (zmienne `NEXT_PUBLIC_*`), wymagane do uwierzytelniania i Firestore.
