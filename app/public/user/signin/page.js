@@ -1,4 +1,5 @@
-﻿"use client";
+"use client";
+export const dynamic = "force-dynamic";
 
 import {
   signInWithEmailAndPassword,
@@ -8,17 +9,36 @@ import {
 } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 export default function SignInPage() {
-  const auth = getAuth();
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-700 shadow-lg ring-1 ring-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800/60">
+          Ladowanie...
+        </div>
+      }
+    >
+      <SignInContent />
+    </Suspense>
+  );
+}
+
+function SignInContent() {
+  const [auth, setAuth] = useState(null);
   const params = useSearchParams();
   const router = useRouter();
   const returnUrl = params.get("returnUrl");
   const [errorMessage, setErrorMessage] = useState("");
 
+  useEffect(() => {
+    setAuth(getAuth());
+  }, []);
+
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (!auth) return;
     setErrorMessage("");
     const email = e.target["email"]?.value || "";
     const password = e.target["password"]?.value || "";
@@ -34,11 +54,7 @@ export default function SignInPage() {
         return;
       }
 
-      if (!returnUrl) {
-        router.push("/");
-        return;
-      }
-      router.push(returnUrl);
+      router.push(returnUrl || "/");
     } catch (error) {
       setErrorMessage(error.message || "Nie udalo sie zalogowac.");
     }
