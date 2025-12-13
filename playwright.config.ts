@@ -1,12 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+// Załaduj .env, żeby dev server Playwright miał klucze Firebase
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -75,5 +72,8 @@ export default defineConfig({
     command: 'npm run dev -- --hostname 0.0.0.0 --port 3000',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
+    env: {
+      ...process.env,
+    },
   },
 });
